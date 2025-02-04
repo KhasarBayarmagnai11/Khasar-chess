@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <style>
+        .board {
+            width: 400px;
+            height: 400px;
+            border: 2px solid #333;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+        }
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+        }
+        .white {
+            background-color: #f0d9b5;
+        }
+        .black {
+            background-color: #b58863;
+        }
+        .piece {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="board" id="chessboard"></div>
+
+    <script>
+        const board = document.getElementById('chessboard');
+        const pieces = {
+            white: {
+                king: '♔',
+                queen: '♕',
+                rook: '♖',
+                bishop: '♗',
+                knight: '♘',
+                pawn: '♙'
+            },
+            black: {
+                king: '♚',
+                queen: '♛',
+                rook: '♜',
+                bishop: '♝',
+                knight: '♞',
+                pawn: '♟'
+            }
+        };
+
+        // Create the board
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const square = document.createElement('div');
+                square.className = `square ${(row + col) % 2 === 0 ? 'white' : 'black'}`;
+                square.dataset.row = row;
+                square.dataset.col = col;
+                board.appendChild(square);
+            }
+        }
+
+        // Set up initial piece positions
+        function setupPieces() {
+            // Set up pawns
+            for (let col = 0; col < 8; col++) {
+                placePiece(1, col, pieces.black.pawn);
+                placePiece(6, col, pieces.white.pawn);
+            }
+
+            // Set up other pieces
+            const backRowPieces = [
+                'rook', 'knight', 'bishop', 'queen', 
+                'king', 'bishop', 'knight', 'rook'
+            ];
+
+            for (let col = 0; col < 8; col++) {
+                placePiece(0, col, pieces.black[backRowPieces[col]]);
+                placePiece(7, col, pieces.white[backRowPieces[col]]);
+            }
+        }
+
+        function placePiece(row, col, piece) {
+            const square = board.children[row * 8 + col];
+            square.innerHTML = `<span class="piece">${piece}</span>`;
+        }
+
+        setupPieces();
+
+        // Basic piece movement
+        let selectedPiece = null;
+
+        board.addEventListener('click', (e) => {
+            const square = e.target.closest('.square');
+            if (!square) return;
+
+            if (selectedPiece) {
+                // Move piece
+                square.innerHTML = selectedPiece.innerHTML;
+                selectedPiece.innerHTML = '';
+                selectedPiece = null;
+            } else if (square.querySelector('.piece')) {
+                selectedPiece = square;
+            }
+        });
+    </script>
+</body>
+</html>
